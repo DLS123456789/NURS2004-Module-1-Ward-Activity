@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Ward 1 | NURS2004 Module 1 Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700;800&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #f6f4f0;
+    --paper: #ffffff;
+    --sage: #6a99b8;
+    --sage-deep: #4d7d9c;
+    --sage-light: #e2ecf3;
+    --coral: #e08877;
+    --coral-deep: #b86458;
+    --coral-light: #f8e2dc;
+    --gold: #dcab5a;
+    --gold-light: #f5e8cc;
+    --rose: #b5a3c0;
+    --rose-light: #ede5f0;
+    --ink: #2d3748;
+    --ink-soft: #556070;
+    --muted: #8a93a3;
+    --line: #e4e0d8;
+    --floor: #efebe2;
+    --wall: #d4ccc0;
+  }
+
+  html, body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.5;
+    overscroll-behavior: none;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 12px; }
+
+  /* HUD */
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 4px 16px rgba(45, 55, 72, 0.05);
+  }
+
+  .hud-brand { display: flex; align-items: center; gap: 10px; }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--coral);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 2px 0 var(--coral-deep);
+  }
+
+  .brand-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+  .brand-sub { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+
+  .stat-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .stat-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 5px 9px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .stat-pill-label { color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-size: 0.6rem; }
+  .stat-pill-value { color: var(--coral); font-weight: 700; }
+
+  .module-pill {
+    background: var(--sage);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* Screens */
+  .screen {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 10px 40px rgba(45, 55, 72, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Intro */
+  .intro-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+
+  .intro-title .accent { color: var(--coral); font-style: italic; }
+  .intro-sub { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 4px; }
+  .intro-meta { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; font-weight: 600; }
+
+  .briefing {
+    background: var(--sage-light);
+    border-left: 4px solid var(--sage);
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 18px;
+  }
+
+  .briefing-label { font-family: 'JetBrains Mono', monospace; color: var(--sage-deep); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: 700; }
+  .briefing p { font-size: 0.92rem; color: var(--ink); margin-bottom: 6px; }
+  .briefing p:last-child { margin-bottom: 0; }
+  .briefing strong { color: var(--sage-deep); }
+
+  .levels-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
+
+  .level-preview-card {
+    background: var(--coral-light);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .level-preview-num { font-family: 'Fraunces', serif; color: var(--coral-deep); font-weight: 800; font-size: 1.6rem; line-height: 1; margin-bottom: 4px; }
+  .level-preview-name { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 0.85rem; margin-bottom: 4px; }
+  .level-preview-tag { font-family: 'JetBrains Mono', monospace; color: var(--coral-deep); font-size: 0.62rem; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; }
+
+  .btn {
+    background: var(--coral);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 0 var(--coral-deep);
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--coral-deep); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--coral-deep); }
+  .btn-full { width: 100%; }
+  .btn-sage { background: var(--sage); box-shadow: 0 4px 0 var(--sage-deep); }
+  .btn-sage:hover { box-shadow: 0 6px 0 var(--sage-deep); }
+  .btn-sage:active { box-shadow: 0 2px 0 var(--sage-deep); }
+  .btn-ghost { background: var(--paper); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+
+  /* ===== WARD CONTAINER ===== */
+  .ward-wrap {
+    position: relative;
+  }
+
+  .ward-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--ink);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .ward-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 1px; }
+  .ward-status { background: var(--coral); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; }
+
+  .ward-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: 520px;
+    background: var(--floor);
+    border: 2px solid var(--ink);
+    border-top: none;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+  }
+
+  #ward-canvas { width: 100%; height: 100%; display: block; cursor: pointer; }
+
+  /* Touch controls */
+  .touch-controls {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) { .touch-controls { display: none; } }
+
+  .touch-pad { display: flex; gap: 6px; pointer-events: auto; }
+
+  .touch-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .touch-btn:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); background: var(--coral-light); }
+
+  /* Game HUD */
+  .game-hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 10;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .game-hud-stat {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.78rem;
+    box-shadow: 0 2px 0 var(--ink);
+  }
+
+  .game-hud-stat.xp { color: var(--gold); }
+  .game-hud-stat.lvl { color: var(--ink); }
+
+  /* Hint banner */
+  .hint-banner {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    z-index: 15;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: hintSlide 3s ease forwards;
+    pointer-events: none;
+  }
+
+  @keyframes hintSlide {
+    0% { opacity: 0; transform: translate(-50%, -10px); }
+    15%, 85% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -10px); }
+  }
+
+  /* Mini game overlays */
+  .minigame-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(45, 55, 72, 0.9);
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .minigame-panel {
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 22px;
+    width: 100%;
+    max-width: 620px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    margin: auto;
+  }
+
+  .minigame-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2px dashed var(--line);
+  }
+
+  .minigame-num {
+    width: 40px;
+    height: 40px;
+    background: var(--coral-light);
+    color: var(--coral-deep);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .minigame-info { flex: 1; }
+  .minigame-tag { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  .minigame-title { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 1.15rem; margin-top: 2px; }
+
+  .minigame-type {
+    background: var(--gold-light);
+    color: var(--ink);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .minigame-prompt {
+    background: var(--sage-light);
+    border-left: 4px solid var(--sage);
+    padding: 12px 14px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 14px;
+    color: var(--ink);
+    font-size: 0.9rem;
+  }
+
+  .minigame-prompt strong { color: var(--sage-deep); }
+
+  .minigame-body { margin-bottom: 12px; }
+
+  .minigame-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+
+  /* ===== LEVEL 1: SORTING GAME ===== */
+  .sort-arena { background: var(--bg); border-radius: 12px; padding: 14px; }
+
+  .incoming-card {
+    background: var(--paper);
+    border: 2px solid var(--coral);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    box-shadow: 0 4px 0 var(--coral-light);
+  }
+
+  .incoming-label { font-family: 'JetBrains Mono', monospace; color: var(--coral); font-size: 0.65rem; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px; }
+  .incoming-text { font-family: 'Outfit', sans-serif; color: var(--ink); font-size: 0.95rem; font-weight: 500; }
+
+  .sort-buckets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 500px) {
+    .sort-buckets { grid-template-columns: 1fr; }
+  }
+
+  .bucket-btn {
+    background: var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .bucket-btn:hover { transform: translateY(-2px); }
+  .bucket-btn.law:hover { border-color: var(--rose); background: var(--rose-light); }
+  .bucket-btn.ethics:hover { border-color: var(--sage); background: var(--sage-light); }
+  .bucket-btn.both:hover { border-color: var(--gold); background: var(--gold-light); }
+  .bucket-btn:disabled { cursor: default; }
+  .bucket-btn.correct { background: var(--sage-light); border-color: var(--sage); }
+  .bucket-btn.wrong { background: var(--coral-light); border-color: var(--coral); }
+
+  .bucket-name { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 0.95rem; margin-bottom: 2px; }
+  .bucket-sub { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+
+  .game-progress {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.3s;
+  }
+
+  .progress-dot.done.correct { background: var(--sage); }
+  .progress-dot.done.wrong { background: var(--coral); }
+
+  /* ===== LEVEL 2: DIALOGUE SCENARIO ===== */
+  .dialogue-patient {
+    background: var(--rose-light);
+    border-left: 4px solid var(--rose);
+    border-radius: 0 12px 12px 0;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .dialogue-patient-name { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 1rem; margin-bottom: 4px; }
+  .dialogue-patient-context { font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 8px; font-style: italic; }
+  .dialogue-patient-quote { color: var(--ink); font-size: 0.95rem; font-family: 'Fraunces', serif; font-style: italic; }
+
+  .dialogue-question { margin: 14px 0 10px; font-weight: 600; color: var(--ink); font-size: 0.92rem; }
+
+  .dialogue-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .dialogue-option {
+    background: var(--paper);
+    border: 2px solid var(--line);
+    color: var(--ink);
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+
+  .dialogue-option:hover { border-color: var(--coral); background: var(--coral-light); transform: translateX(3px); }
+  .dialogue-option.chosen.best { border-color: var(--sage); background: var(--sage-light); }
+  .dialogue-option.chosen.bad { border-color: var(--coral); background: var(--coral-light); }
+  .dialogue-option.faded { opacity: 0.4; }
+  .dialogue-option:disabled { cursor: default; }
+
+  /* ===== LEVEL 3: REVEAL THE DATA ===== */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 500px) {
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  .chart-card {
+    background: var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 100px;
+  }
+
+  .chart-card:hover:not(.revealed) {
+    border-color: var(--gold);
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .chart-card.revealed {
+    background: var(--sage-light);
+    border-color: var(--sage);
+    cursor: default;
+  }
+
+  .chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .chart-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--coral);
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .chart-card.revealed .chart-card-label { color: var(--sage-deep); }
+
+  .chart-card-icon { font-size: 1.1rem; }
+
+  .chart-card-question {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.92rem;
+    margin-bottom: 6px;
+  }
+
+  .chart-card-answer {
+    background: var(--paper);
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--sage);
+    color: var(--ink);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    margin-top: 6px;
+    animation: slideIn 0.4s ease;
+  }
+
+  .chart-card-hidden {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.78rem;
+    text-align: center;
+    padding: 16px 0;
+  }
+
+  .data-progress {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--coral);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== LEVEL 4: TIMED THEORY SORT ===== */
+  .theory-timer-wrap {
+    background: var(--bg);
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+  }
+
+  .theory-timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--gold), var(--coral));
+    transition: width 0.1s linear;
+  }
+
+  .theory-statement {
+    background: var(--paper);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--ink);
+    box-shadow: 0 4px 0 var(--gold-light);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.4;
+  }
+
+  .theory-choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .theory-choice-btn {
+    background: var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .theory-choice-btn.deon:hover { border-color: var(--rose); background: var(--rose-light); }
+  .theory-choice-btn.tele:hover { border-color: var(--gold); background: var(--gold-light); }
+  .theory-choice-btn:disabled { cursor: default; }
+  .theory-choice-btn.correct { border-color: var(--sage); background: var(--sage-light); }
+  .theory-choice-btn.wrong { border-color: var(--coral); background: var(--coral-light); }
+
+  .theory-choice-name { font-family: 'Fraunces', serif; font-weight: 800; color: var(--ink); font-size: 0.95rem; margin-bottom: 2px; }
+  .theory-choice-sub { font-size: 0.72rem; color: var(--ink-soft); font-style: italic; }
+
+  .timed-counter {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--coral-deep);
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== LEVEL 5: ORDER STEPS ===== */
+  .scenario-context {
+    background: var(--rose-light);
+    border-left: 4px solid var(--rose);
+    padding: 12px 14px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 14px;
+    color: var(--ink);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .scenario-context strong { color: var(--rose); }
+
+  .order-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+
+  .order-item {
+    background: var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .order-item-num {
+    width: 26px;
+    height: 26px;
+    background: var(--coral-light);
+    color: var(--coral-deep);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+
+  .order-item-text { flex: 1; font-size: 0.88rem; color: var(--ink); line-height: 1.4; }
+  .order-controls { display: flex; gap: 4px; flex-shrink: 0; }
+
+  .order-btn {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+  }
+
+  .order-btn:hover { background: var(--coral); color: white; border-color: var(--coral); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--sage-light);
+    border-left: 4px solid var(--sage);
+    border-radius: 0 12px 12px 0;
+    animation: slideIn 0.4s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .feedback.error { background: var(--coral-light); border-color: var(--coral); }
+  .feedback-tag {
+    display: inline-block;
+    background: var(--sage);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .feedback.error .feedback-tag { background: var(--coral); }
+  .feedback-text { color: var(--ink); font-size: 0.88rem; line-height: 1.5; }
+  .feedback-text strong { color: var(--sage-deep); }
+
+  /* XP pop */
+  .xp-pop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--gold);
+    color: white;
+    padding: 14px 26px;
+    border-radius: 14px;
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    z-index: 60;
+    box-shadow: 0 10px 24px rgba(220, 171, 90, 0.4);
+    animation: xpPop 1.4s ease forwards;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  @keyframes xpPop {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+    80% { transform: translate(-50%, -80%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -120%) scale(0.9); opacity: 0; }
+  }
+
+  /* ===== FINISH ===== */
+  .finish-banner { text-align: center; padding: 16px 0 18px; }
+
+  .finish-icon {
+    width: 70px;
+    height: 70px;
+    background: var(--sage);
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 6px 0 var(--sage-deep);
+  }
+
+  .finish-title { font-family: 'Fraunces', serif; font-weight: 800; color: var(--ink); font-size: clamp(1.6rem, 5vw, 2.2rem); margin-bottom: 6px; }
+
+  .archetype-card {
+    background: linear-gradient(135deg, var(--sage-light), var(--coral-light));
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+
+  .archetype-title { font-family: 'Fraunces', serif; font-weight: 800; color: var(--coral-deep); font-size: 1.3rem; margin-bottom: 6px; }
+  .archetype-desc { color: var(--ink); font-size: 0.9rem; max-width: 460px; margin: 0 auto; }
+
+  .final-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .final-stat {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .final-stat-num { font-family: 'Fraunces', serif; font-weight: 800; color: var(--sage-deep); font-size: 1.3rem; }
+  .final-stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .toolkit-summary {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .toolkit-summary-title { font-family: 'Fraunces', serif; font-weight: 700; color: var(--ink); font-size: 1rem; margin-bottom: 10px; }
+  .toolkit-card-line { font-size: 0.85rem; color: var(--ink); margin-bottom: 8px; padding-left: 16px; position: relative; }
+  .toolkit-card-line::before { content: '▸'; position: absolute; left: 0; color: var(--coral); font-weight: 700; }
+  .toolkit-card-line strong { color: var(--sage-deep); }
+
+  .reflection-box {
+    background: var(--sage-light);
+    border-left: 4px solid var(--sage);
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 16px;
+  }
+
+  .reflection-box h3 { font-family: 'Fraunces', serif; color: var(--sage-deep); font-size: 0.95rem; margin-bottom: 6px; }
+  .reflection-box p { color: var(--ink); font-size: 0.85rem; margin-bottom: 4px; }
+
+  .finish-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .finish-actions .btn { flex: 1; min-width: 140px; }
+
+  @media print {
+    body { background: white; }
+    .container { max-width: 100%; padding: 0; }
+    .hud, #intro-screen, #game-screen, .finish-banner, .finish-actions, .reflection-box, .archetype-card { display: none !important; }
+    .toolkit-summary { border: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="hud">
+    <div class="hud-brand">
+      <div class="brand-mark">W1</div>
+      <div>
+        <div class="brand-title">Ward 1</div>
+        <div class="brand-sub">NURS2004 Ethics Game</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div class="module-pill">Module 1</div>
+      <div class="stat-pill"><span class="stat-pill-label">XP</span><span class="stat-pill-value" id="hud-xp">0</span></div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div id="intro-screen" class="screen">
+    <h1 class="intro-title">Welcome to <span class="accent">Ward 1</span></h1>
+    <div class="intro-sub">Your first shift. Five patients, five challenges, all different.</div>
+    <div class="intro-meta">Introduction to Ethics and Ethical Theories</div>
+
+    <div class="briefing">
+      <div class="briefing-label">// SHIFT BRIEFING</div>
+      <p>You're a graduate nurse starting your first shift on Ward 1. There are <strong>five patients or stations</strong> on the ward, each presenting a different ethical learning challenge.</p>
+      <p><strong>Move with arrow keys or WASD</strong>, or click to walk. Walk up to a patient bed or station to trigger that level's mini game. <strong>Each mini game is different.</strong> Earn XP for participating and bonus XP for getting things right.</p>
+    </div>
+
+    <div class="levels-preview">
+      <div class="level-preview-card">
+        <div class="level-preview-num">1</div>
+        <div class="level-preview-name">Reception</div>
+        <div class="level-preview-tag">Sort</div>
+      </div>
+      <div class="level-preview-card">
+        <div class="level-preview-num">2</div>
+        <div class="level-preview-name">Mr Davies</div>
+        <div class="level-preview-tag">Dialogue</div>
+      </div>
+      <div class="level-preview-card">
+        <div class="level-preview-num">3</div>
+        <div class="level-preview-name">Data Room</div>
+        <div class="level-preview-tag">Reveal</div>
+      </div>
+      <div class="level-preview-card">
+        <div class="level-preview-num">4</div>
+        <div class="level-preview-name">Theory Lab</div>
+        <div class="level-preview-tag">Timed</div>
+      </div>
+      <div class="level-preview-card">
+        <div class="level-preview-num">5</div>
+        <div class="level-preview-name">Decision Suite</div>
+        <div class="level-preview-tag">Order</div>
+      </div>
+    </div>
+
+    <button class="btn btn-full" onclick="startGame()">Start Your Shift</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen" class="screen hidden" style="padding: 14px;">
+    <div class="ward-wrap">
+      <div class="ward-header">
+        <div class="ward-title">WARD 1 — MORNING SHIFT</div>
+        <div class="ward-status" id="ward-status">5 stations</div>
+      </div>
+      <div class="ward-container" id="ward-container">
+        <canvas id="ward-canvas"></canvas>
+
+        <div class="game-hud">
+          <div class="game-hud-stat lvl">Stations <span id="g-completed">0</span>/5</div>
+          <div class="game-hud-stat xp">★ <span id="g-xp">0</span> XP</div>
+        </div>
+
+        <div class="touch-controls">
+          <div class="touch-pad">
+            <div class="touch-btn" id="btn-left">◀</div>
+            <div class="touch-btn" id="btn-down">▼</div>
+            <div class="touch-btn" id="btn-up">▲</div>
+            <div class="touch-btn" id="btn-right">▶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINISH -->
+  <div id="finish-screen" class="screen hidden">
+    <div class="finish-banner">
+      <div class="finish-icon">✓</div>
+      <div class="finish-title" id="finish-title">Shift Complete</div>
+      <div style="color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 600;">Ward 1 Debrief</div>
+    </div>
+
+    <div class="final-stats">
+      <div class="final-stat"><div class="final-stat-num" id="final-xp">0</div><div class="final-stat-label">Total XP</div></div>
+      <div class="final-stat"><div class="final-stat-num" id="final-correct">0</div><div class="final-stat-label">Correct</div></div>
+      <div class="final-stat"><div class="final-stat-num" id="final-stations">0</div><div class="final-stat-label">Stations</div></div>
+    </div>
+
+    <div class="archetype-card">
+      <div class="archetype-title" id="archetype-title">The Engaged Nurse</div>
+      <div class="archetype-desc" id="archetype-desc"></div>
+    </div>
+
+    <div class="toolkit-summary">
+      <div class="toolkit-summary-title">What You Learned</div>
+      <div class="toolkit-card-line"><strong>Law vs Ethics</strong> — Law is what you must do, ethics is what you should do. Often the same, sometimes in tension.</div>
+      <div class="toolkit-card-line"><strong>The Dying Patient</strong> — Acknowledge the question, support the patient, ensure the right conversation happens.</div>
+      <div class="toolkit-card-line"><strong>Good Ethics Needs Good Data</strong> — Ethical reasoning fails without accurate facts about the patient and situation.</div>
+      <div class="toolkit-card-line"><strong>Two Theory Families</strong> — Deontology focuses on duty, teleology focuses on consequences.</div>
+      <div class="toolkit-card-line"><strong>Kerridge Model</strong> — Six steps: state problem, get facts, consider principles, view perspectives, weigh options, act and evaluate.</div>
+    </div>
+
+    <div class="reflection-box">
+      <h3>For Your Reflective Tasks</h3>
+      <p>Which station challenged you most? What assumption did the game reveal? Bring those reflections to your seminar.</p>
+    </div>
+
+    <div class="finish-actions">
+      <button class="btn btn-sage" onclick="window.print()">Print Summary</button>
+      <button class="btn btn-ghost" onclick="restart()">Play Again</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============== STATE ==============
+let canvas, ctx;
+let gameState = 'intro';
+let player = { x: 400, y: 380, targetX: 400, targetY: 380, facing: 1 };
+let keyboardKeys = { up: false, down: false, left: false, right: false };
+let stations = [];
+let completed = 0;
+let correctCount = 0;
+let totalXp = 0;
+let dialogActive = false;
+let lastFrameTime = 0;
+let activeMinigame = null;
+
+const GROUND_Y_MIN = 200;
+const GROUND_Y_MAX = 430;
+
+// ============== STATIONS DATA ==============
+const STATION_DATA = [
+  { id: 's1', name: 'Reception', x: 110, y: 230, type: 'sort_game' },
+  { id: 's2', name: 'Mr Davies', x: 290, y: 150, type: 'dialogue' },
+  { id: 's3', name: 'Data Room', x: 490, y: 150, type: 'reveal' },
+  { id: 's4', name: 'Theory Lab', x: 680, y: 150, type: 'timed' },
+  { id: 's5', name: 'Decision Suite', x: 680, y: 360, type: 'order' }
+];
+
+// ============== INIT ==============
+function startGame() {
+  document.getElementById('intro-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+  setupCanvas();
+  initStations();
+  gameState = 'playing';
+  lastFrameTime = performance.now();
+  player.x = 400;
+  player.y = 380;
+  player.targetX = 400;
+  player.targetY = 380;
+  showHint('Walk to a station to begin');
+  requestAnimationFrame(gameLoop);
+}
+
+function initStations() {
+  stations = STATION_DATA.map(s => ({ ...s, completed: false }));
+  completed = 0;
+  correctCount = 0;
+  totalXp = 0;
+  updateHUD();
+}
+
+function setupCanvas() {
+  canvas = document.getElementById('ward-canvas');
+  ctx = canvas.getContext('2d');
+  canvas.width = 800;
+  canvas.height = 500;
+  canvas.onclick = handleCanvasClick;
+  canvas.ontouchstart = handleTouch;
+}
+
+function updateHUD() {
+  document.getElementById('hud-xp').textContent = totalXp;
+  document.getElementById('g-completed').textContent = completed;
+  document.getElementById('g-xp').textContent = totalXp;
+  document.getElementById('ward-status').textContent = `${completed} of 5`;
+}
+
+function showHint(text) {
+  const wrap = document.getElementById('ward-container');
+  const existing = wrap.querySelector('.hint-banner');
+  if (existing) existing.remove();
+  const banner = document.createElement('div');
+  banner.className = 'hint-banner';
+  banner.textContent = text;
+  wrap.appendChild(banner);
+  setTimeout(() => banner.remove(), 3000);
+}
+
+function showXpPop(amount, msg) {
+  const wrap = document.getElementById('ward-container');
+  const pop = document.createElement('div');
+  pop.className = 'xp-pop';
+  pop.innerHTML = `+${amount} XP<br><span style="font-size: 0.78rem; opacity: 0.95; font-family: 'Outfit', sans-serif; display: block; margin-top: 4px;">${msg}</span>`;
+  wrap.appendChild(pop);
+  setTimeout(() => pop.remove(), 1400);
+}
+
+// ============== INPUT ==============
+function handleCanvasClick(e) {
+  if (dialogActive || gameState !== 'playing') return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width * 800;
+  const y = (e.clientY - rect.top) / rect.height * 500;
+  handleTap(x, y);
+}
+
+function handleTouch(e) {
+  if (dialogActive || gameState !== 'playing') return;
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  const x = (touch.clientX - rect.left) / rect.width * 800;
+  const y = (touch.clientY - rect.top) / rect.height * 500;
+  handleTap(x, y);
+}
+
+function handleTap(x, y) {
+  player.targetX = Math.max(40, Math.min(760, x));
+  player.targetY = Math.max(GROUND_Y_MIN, Math.min(GROUND_Y_MAX, y));
+}
+
+window.addEventListener('keydown', e => {
+  if (dialogActive || gameState !== 'playing') return;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { keyboardKeys.up = true; e.preventDefault(); }
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { keyboardKeys.down = true; e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keyboardKeys.left = true; e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keyboardKeys.right = true; e.preventDefault(); }
+});
+
+window.addEventListener('keyup', e => {
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keyboardKeys.up = false;
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keyboardKeys.down = false;
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keyboardKeys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keyboardKeys.right = false;
+});
+
+function bindTouchBtn(id, key) {
+  const el = document.getElementById(id);
+  const press = e => { e.preventDefault(); keyboardKeys[key] = true; };
+  const release = e => { e.preventDefault(); keyboardKeys[key] = false; };
+  el.addEventListener('touchstart', press, { passive: false });
+  el.addEventListener('touchend', release, { passive: false });
+  el.addEventListener('mousedown', press);
+  el.addEventListener('mouseup', release);
+  el.addEventListener('mouseleave', release);
+}
+bindTouchBtn('btn-up', 'up');
+bindTouchBtn('btn-down', 'down');
+bindTouchBtn('btn-left', 'left');
+bindTouchBtn('btn-right', 'right');
+
+// ============== GAME LOOP ==============
+function gameLoop(t) {
+  if (gameState !== 'playing') return;
+  const dt = Math.min(0.05, (t - lastFrameTime) / 1000);
+  lastFrameTime = t;
+  if (!dialogActive) update(dt);
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function update(dt) {
+  // Keyboard takes priority
+  const usingKeys = keyboardKeys.up || keyboardKeys.down || keyboardKeys.left || keyboardKeys.right;
+  if (usingKeys) {
+    const speed = 220;
+    let mx = 0, my = 0;
+    if (keyboardKeys.left) mx -= 1;
+    if (keyboardKeys.right) mx += 1;
+    if (keyboardKeys.up) my -= 1;
+    if (keyboardKeys.down) my += 1;
+    const mag = Math.sqrt(mx*mx + my*my);
+    if (mag > 0) { mx /= mag; my /= mag; }
+    player.x += mx * speed * dt;
+    player.y += my * speed * dt;
+    player.x = Math.max(40, Math.min(760, player.x));
+    player.y = Math.max(GROUND_Y_MIN, Math.min(GROUND_Y_MAX, player.y));
+    if (Math.abs(mx) > 0.1) player.facing = mx > 0 ? 1 : -1;
+    player.targetX = player.x;
+    player.targetY = player.y;
+  } else {
+    // Click-to-move
+    const dx = player.targetX - player.x;
+    const dy = player.targetY - player.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist > 3) {
+      const speed = 220;
+      player.x += (dx / dist) * speed * dt;
+      player.y += (dy / dist) * speed * dt;
+      if (Math.abs(dx) > 5) player.facing = dx > 0 ? 1 : -1;
+    }
+  }
+
+  // Check for station proximity
+  for (const station of stations) {
+    if (station.completed) continue;
+    const dx = station.x - player.x;
+    const dy = station.y - player.y;
+    if (Math.sqrt(dx*dx + dy*dy) < 60) {
+      openMinigame(station);
+      break;
+    }
+  }
+}
+
+// ============== DRAW ==============
+function draw() {
+  // Soft floor base
+  const floorGrad = ctx.createLinearGradient(0, 0, 0, 500);
+  floorGrad.addColorStop(0, '#f4f1ea');
+  floorGrad.addColorStop(1, '#efebe2');
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(0, 0, 800, 500);
+
+  // Modern tile grid lines (subtle)
+  ctx.strokeStyle = 'rgba(31, 41, 55, 0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= 800; x += 80) {
+    ctx.beginPath();
+    ctx.moveTo(x, 30);
+    ctx.lineTo(x, 470);
+    ctx.stroke();
+  }
+  for (let y = 30; y <= 470; y += 80) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(800, y);
+    ctx.stroke();
+  }
+
+  // Soft accent rug under nurse station
+  ctx.fillStyle = 'rgba(61, 122, 122, 0.06)';
+  roundRect(200, 350, 400, 110, 14);
+  ctx.fill();
+
+  // Top wall band (gradient)
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, 30);
+  wallGrad.addColorStop(0, '#dcd3c4');
+  wallGrad.addColorStop(1, '#d4ccc0');
+  ctx.fillStyle = wallGrad;
+  ctx.fillRect(0, 0, 800, 30);
+  // Wall shadow
+  ctx.fillStyle = 'rgba(31, 41, 55, 0.08)';
+  ctx.fillRect(0, 30, 800, 3);
+
+  // Modern hospital cross sign
+  drawHospitalSign(400, 16);
+
+  // Wall plant left
+  drawWallPlant(40, 50);
+  // Wall clock right
+  drawWallClock(740, 50);
+  // Hand sanitiser station
+  drawSanitiser(150, 60);
+
+  // Nursing station counter
+  drawNursingStation(400, 460);
+
+  // Stations
+  stations.forEach(s => drawStation(s));
+
+  // Player
+  drawPlayer();
+
+  // Target indicator if not using keys
+  if (!keyboardKeys.up && !keyboardKeys.down && !keyboardKeys.left && !keyboardKeys.right) {
+    const dx = player.targetX - player.x;
+    const dy = player.targetY - player.y;
+    if (Math.sqrt(dx*dx + dy*dy) > 10) {
+      const pulse = (Math.sin(performance.now() / 200) + 1) / 2;
+      ctx.strokeStyle = `rgba(217, 106, 58, ${0.5 + pulse * 0.4})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(player.targetX, player.targetY, 8 + pulse * 6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(217, 106, 58, ${0.3})`;
+      ctx.beginPath();
+      ctx.arc(player.targetX, player.targetY, 14 + pulse * 8, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+}
+
+// Helper: rounded rectangle
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawHospitalSign(cx, cy) {
+  // White rounded plaque with shadow
+  ctx.shadowColor = 'rgba(26, 35, 50, 0.15)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetY = 2;
+  ctx.fillStyle = '#ffffff';
+  roundRect(cx - 18, cy - 11, 36, 22, 4);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Soft medical cross
+  ctx.fillStyle = '#e08877';
+  ctx.fillRect(cx - 2, cy - 7, 4, 14);
+  ctx.fillRect(cx - 7, cy - 2, 14, 4);
+}
+
+function drawWallPlant(x, y) {
+  // Pot
+  ctx.fillStyle = '#8a6447';
+  roundRect(x - 8, y, 16, 12, 2);
+  ctx.fill();
+  ctx.fillStyle = '#6d4f37';
+  ctx.fillRect(x - 8, y, 16, 2);
+  // Leaves (modern monstera vibe)
+  ctx.fillStyle = '#6a99b8';
+  ctx.beginPath();
+  ctx.ellipse(x - 6, y - 4, 5, 8, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#4d7d9c';
+  ctx.beginPath();
+  ctx.ellipse(x, y - 8, 4, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#7daacb';
+  ctx.beginPath();
+  ctx.ellipse(x + 5, y - 5, 4, 7, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawWallClock(x, y) {
+  // Shadow
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.15)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 2;
+  // Outer ring
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath();
+  ctx.arc(x, y, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  // Face
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(x, y, 10, 0, Math.PI * 2);
+  ctx.fill();
+  // Tick marks
+  ctx.fillStyle = '#1f2937';
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
+    const tx = x + Math.cos(a) * 8;
+    const ty = y + Math.sin(a) * 8;
+    ctx.beginPath();
+    ctx.arc(tx, ty, 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Hands
+  ctx.strokeStyle = '#1f2937';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x, y - 6);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + 5, y + 1);
+  ctx.stroke();
+  // Centre dot
+  ctx.fillStyle = '#e08877';
+  ctx.beginPath();
+  ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawSanitiser(x, y) {
+  // Wall mount
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.12)';
+  ctx.shadowBlur = 3;
+  ctx.shadowOffsetY = 1;
+  roundRect(x - 7, y - 12, 14, 24, 3);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  // Liquid window
+  ctx.fillStyle = '#e2ecf3';
+  roundRect(x - 5, y - 4, 10, 12, 1);
+  ctx.fill();
+  // Pump
+  ctx.fillStyle = '#1f2937';
+  ctx.fillRect(x - 2, y - 12, 4, 3);
+}
+
+function drawNursingStation(cx, cy) {
+  // Counter shadow
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.18)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 3;
+
+  // Counter body (rounded, modern)
+  const grad = ctx.createLinearGradient(0, cy - 15, 0, cy + 25);
+  grad.addColorStop(0, '#7daacb');
+  grad.addColorStop(1, '#4d7d9c');
+  ctx.fillStyle = grad;
+  roundRect(cx - 130, cy - 15, 260, 40, 12);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Top counter surface highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  roundRect(cx - 128, cy - 14, 256, 6, 8);
+  ctx.fill();
+
+  // Label
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.font = "700 11px 'JetBrains Mono', monospace";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('NURSE STATION', cx, cy + 5);
+
+  // Small monitor on counter
+  ctx.fillStyle = '#1f2937';
+  roundRect(cx - 80, cy - 28, 22, 16, 2);
+  ctx.fill();
+  ctx.fillStyle = '#7daacb';
+  ctx.fillRect(cx - 78, cy - 26, 18, 12);
+  // Coffee cup
+  ctx.fillStyle = '#ffffff';
+  roundRect(cx + 60, cy - 22, 10, 12, 1);
+  ctx.fill();
+  ctx.strokeStyle = '#1f2937';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(cx + 70, cy - 18);
+  ctx.quadraticCurveTo(cx + 76, cy - 18, cx + 76, cy - 13);
+  ctx.stroke();
+  // Steam wisps
+  ctx.strokeStyle = 'rgba(31, 41, 55, 0.3)';
+  ctx.lineWidth = 1;
+  const tWisp = performance.now() / 400;
+  ctx.beginPath();
+  ctx.moveTo(cx + 63, cy - 24);
+  ctx.quadraticCurveTo(cx + 65 + Math.sin(tWisp) * 2, cy - 28, cx + 63, cy - 32);
+  ctx.stroke();
+}
+
+function drawStation(s) {
+  switch (s.type) {
+    case 'sort_game':
+      drawReceptionDesk(s);
+      break;
+    case 'dialogue':
+    case 'reveal':
+    case 'timed':
+    case 'order':
+      drawBed(s);
+      break;
+  }
+
+  // Station marker
+  if (!s.completed) {
+    const py = s.y - 58;
+    const pulse = Math.sin(performance.now() / 300) * 3 + 6;
+    // Soft outer glow
+    const glowGrad = ctx.createRadialGradient(s.x, py, 0, s.x, py, pulse + 14);
+    glowGrad.addColorStop(0, 'rgba(217, 106, 58, 0.4)');
+    glowGrad.addColorStop(1, 'rgba(217, 106, 58, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(s.x, py, pulse + 14, 0, Math.PI * 2);
+    ctx.fill();
+    // Pin shadow
+    ctx.shadowColor = 'rgba(31, 41, 55, 0.3)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 2;
+    // Map pin shape
+    ctx.fillStyle = '#e08877';
+    ctx.beginPath();
+    ctx.arc(s.x, py, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    // Inner circle highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(s.x - 2, py - 2, 5, 0, Math.PI * 2);
+    ctx.fill();
+    // Number
+    ctx.fillStyle = 'white';
+    ctx.font = "800 12px 'Fraunces', serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const num = STATION_DATA.findIndex(st => st.id === s.id) + 1;
+    ctx.fillText(num, s.x, py + 0.5);
+  } else {
+    // Completed checkmark with soft shadow
+    ctx.shadowColor = 'rgba(31, 41, 55, 0.2)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 1;
+    ctx.fillStyle = '#6a99b8';
+    ctx.beginPath();
+    ctx.arc(s.x, s.y - 58, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(s.x - 4, s.y - 58);
+    ctx.lineTo(s.x - 1, s.y - 55);
+    ctx.lineTo(s.x + 5, s.y - 62);
+    ctx.stroke();
+  }
+
+  // Station name label (modern pill)
+  const labelY = s.y + 45;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.font = "700 9px 'JetBrains Mono', monospace";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const label = s.name.toUpperCase();
+  const labelWidth = ctx.measureText(label).width + 14;
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.1)';
+  ctx.shadowBlur = 3;
+  ctx.shadowOffsetY = 1;
+  roundRect(s.x - labelWidth/2, labelY - 8, labelWidth, 16, 8);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.fillStyle = '#1f2937';
+  ctx.fillText(label, s.x, labelY);
+}
+
+function drawReceptionDesk(s) {
+  // Drop shadow
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.15)';
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 4;
+
+  // Desk body with subtle gradient
+  const grad = ctx.createLinearGradient(0, s.y - 30, 0, s.y + 30);
+  grad.addColorStop(0, '#f4f1ea');
+  grad.addColorStop(1, '#e8e0d3');
+  ctx.fillStyle = grad;
+  roundRect(s.x - 50, s.y - 30, 100, 60, 8);
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Top surface
+  ctx.fillStyle = '#ffffff';
+  roundRect(s.x - 46, s.y - 26, 92, 18, 4);
+  ctx.fill();
+
+  // Accent stripe
+  ctx.fillStyle = '#e08877';
+  roundRect(s.x - 30, s.y - 21, 60, 3, 1.5);
+  ctx.fill();
+
+  // Reception label
+  ctx.fillStyle = '#1f2937';
+  ctx.font = "700 7px 'JetBrains Mono', monospace";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('RECEPTION', s.x, s.y - 13);
+
+  // Modern monitor
+  ctx.fillStyle = '#1f2937';
+  roundRect(s.x - 14, s.y - 2, 28, 18, 2);
+  ctx.fill();
+  // Screen
+  const screenGrad = ctx.createLinearGradient(s.x - 12, s.y, s.x + 12, s.y + 14);
+  screenGrad.addColorStop(0, '#7daacb');
+  screenGrad.addColorStop(1, '#4d7d9c');
+  ctx.fillStyle = screenGrad;
+  roundRect(s.x - 12, s.y, 24, 14, 1);
+  ctx.fill();
+  // Monitor stand
+  ctx.fillStyle = '#1f2937';
+  ctx.fillRect(s.x - 4, s.y + 16, 8, 4);
+  ctx.fillRect(s.x - 8, s.y + 20, 16, 2);
+
+  // Small phone on desk
+  ctx.fillStyle = '#1f2937';
+  roundRect(s.x + 18, s.y + 8, 14, 10, 2);
+  ctx.fill();
+  // Phone screen
+  ctx.fillStyle = '#6a99b8';
+  ctx.fillRect(s.x + 20, s.y + 10, 10, 6);
+}
+
+function drawBed(s) {
+  // Bed shadow
+  ctx.shadowColor = 'rgba(31, 41, 55, 0.18)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 4;
+
+  // Modern bed frame (rounded, two tone)
+  const frameGrad = ctx.createLinearGradient(0, s.y - 30, 0, s.y + 30);
+  frameGrad.addColorStop(0, '#efebe2');
+  frameGrad.addColorStop(1, '#d4ccc0');
+  ctx.fillStyle = frameGrad;
+  roundRect(s.x - 45, s.y - 30, 90, 60, 6);
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Mattress with subtle highlight
+  const mattGrad = ctx.createLinearGradient(0, s.y - 26, 0, s.y + 26);
+  mattGrad.addColorStop(0, '#fdfaf3');
+  mattGrad.addColorStop(1, '#efebe2');
+  ctx.fillStyle = mattGrad;
+  roundRect(s.x - 41, s.y - 26, 82, 52, 4);
+  ctx.fill();
+
+  // Subtle mattress outline
+  ctx.strokeStyle = 'rgba(31, 41, 55, 0.12)';
+  ctx.lineWidth = 0.8;
+  roundRect(s.x - 41, s.y - 26, 82, 52, 4);
+  ctx.stroke();
+
+  // Headboard line at top of bed
+  ctx.fillStyle = 'rgba(31, 41, 55, 0.08)';
+  roundRect(s.x - 41, s.y - 26, 82, 3, 1);
+  ctx.fill();
+
+  // Modern pillow (white with subtle shading)
+  ctx.fillStyle = '#ffffff';
+  roundRect(s.x - 38, s.y - 23, 28, 22, 3);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(31, 41, 55, 0.04)';
+  roundRect(s.x - 36, s.y - 5, 24, 3, 2);
+  ctx.fill();
+
+  // Foot blanket fold
+  ctx.fillStyle = '#e2ecf3';
+  roundRect(s.x + 18, s.y - 22, 22, 50, 3);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(31, 41, 55, 0.06)';
+  roundRect(s.x + 18, s.y - 22, 22, 4, 2);
+  ctx.fill();
+
+  // Side rails (modern hospital bed look)
+  ctx.fillStyle = '#9aa5b1';
+  ctx.fillRect(s.x - 47, s.y - 20, 2, 40);
+  ctx.fillRect(s.x + 45, s.y - 20, 2, 40);
+
+  // Patient if not completed
+  if (!s.completed) {
+    // Body under blanket
+    const bodyGrad = ctx.createLinearGradient(0, s.y - 12, 0, s.y + 22);
+    bodyGrad.addColorStop(0, '#c4a8b5');
+    bodyGrad.addColorStop(1, '#a98899');
+    ctx.fillStyle = bodyGrad;
+    roundRect(s.x - 8, s.y - 10, 28, 28, 4);
+    ctx.fill();
+    // Blanket fold detail
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(s.x - 8, s.y - 2, 28, 2);
+    ctx.fillRect(s.x - 8, s.y + 8, 28, 2);
+
+    // Head on pillow
+    ctx.fillStyle = '#f4d4b8';
+    ctx.beginPath();
+    ctx.arc(s.x - 24, s.y - 12, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(31, 41, 55, 0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    // Hair
+    ctx.fillStyle = '#3a2c20';
+    ctx.beginPath();
+    ctx.arc(s.x - 24, s.y - 14, 8, Math.PI, 0);
+    ctx.fill();
+    // Eyes (closed, lines)
+    ctx.strokeStyle = '#1f2937';
+    ctx.lineWidth = 0.8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(s.x - 27, s.y - 11);
+    ctx.lineTo(s.x - 25, s.y - 11);
+    ctx.moveTo(s.x - 23, s.y - 11);
+    ctx.lineTo(s.x - 21, s.y - 11);
+    ctx.stroke();
+
+    // IV pole with bag
+    ctx.strokeStyle = '#9aa5b1';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(s.x + 38, s.y - 35);
+    ctx.lineTo(s.x + 38, s.y + 8);
+    ctx.stroke();
+    // IV bag
+    ctx.fillStyle = '#e2ecf3';
+    roundRect(s.x + 33, s.y - 35, 10, 12, 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(31, 41, 55, 0.3)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+    // Bag label
+    ctx.fillStyle = '#e08877';
+    ctx.fillRect(s.x + 35, s.y - 30, 6, 1);
+  }
+
+  // Bedside monitor (small modern screen)
+  ctx.fillStyle = '#1f2937';
+  roundRect(s.x - 60, s.y - 26, 12, 16, 2);
+  ctx.fill();
+  // Screen
+  ctx.fillStyle = '#6a99b8';
+  ctx.fillRect(s.x - 58, s.y - 24, 8, 8);
+  // Heartbeat line
+  ctx.strokeStyle = '#e08877';
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  const t = performance.now() / 200;
+  ctx.moveTo(s.x - 58, s.y - 20);
+  ctx.lineTo(s.x - 56, s.y - 20);
+  ctx.lineTo(s.x - 55, s.y - 23 + Math.sin(t) * 2);
+  ctx.lineTo(s.x - 54, s.y - 17);
+  ctx.lineTo(s.x - 53, s.y - 20);
+  ctx.lineTo(s.x - 50, s.y - 20);
+  ctx.stroke();
+}
+
+function drawPlayer() {
+  const px = Math.round(player.x);
+  const py = Math.round(player.y);
+
+  ctx.save();
+
+  // Soft shadow
+  ctx.fillStyle = 'rgba(31, 41, 55, 0.18)';
+  ctx.beginPath();
+  ctx.ellipse(px, py + 28, 14, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Legs (scrub pants)
+  ctx.fillStyle = '#2a3548';
+  roundRect(px - 9, py + 16, 7, 14, 2);
+  ctx.fill();
+  roundRect(px + 2, py + 16, 7, 14, 2);
+  ctx.fill();
+
+  // Body (scrub top) with subtle gradient
+  const bodyGrad = ctx.createLinearGradient(0, py - 4, 0, py + 20);
+  bodyGrad.addColorStop(0, '#7daacb');
+  bodyGrad.addColorStop(1, '#6a99b8');
+  ctx.fillStyle = bodyGrad;
+  roundRect(px - 12, py - 4, 24, 22, 5);
+  ctx.fill();
+
+  // V-neck detail
+  ctx.fillStyle = '#f4d4b8';
+  ctx.beginPath();
+  ctx.moveTo(px - 4, py - 4);
+  ctx.lineTo(px, py + 2);
+  ctx.lineTo(px + 4, py - 4);
+  ctx.closePath();
+  ctx.fill();
+
+  // Pocket
+  ctx.strokeStyle = 'rgba(31, 41, 55, 0.2)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(px + 3, py + 8);
+  ctx.lineTo(px + 9, py + 8);
+  ctx.lineTo(px + 9, py + 13);
+  ctx.lineTo(px + 3, py + 13);
+  ctx.closePath();
+  ctx.stroke();
+
+  // ID badge
+  ctx.fillStyle = '#ffffff';
+  roundRect(px - 9, py + 4, 5, 4, 1);
+  ctx.fill();
+  ctx.fillStyle = '#e08877';
+  ctx.fillRect(px - 9, py + 4, 5, 1);
+
+  // Arms
+  ctx.fillStyle = '#6a99b8';
+  roundRect(px - 15, py - 2, 4, 14, 2);
+  ctx.fill();
+  roundRect(px + 11, py - 2, 4, 14, 2);
+  ctx.fill();
+
+  // Hands (skin tone)
+  ctx.fillStyle = '#f4d4b8';
+  ctx.beginPath();
+  ctx.arc(px - 13, py + 13, 2.5, 0, Math.PI * 2);
+  ctx.arc(px + 13, py + 13, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Head with skin gradient
+  const skinGrad = ctx.createRadialGradient(px - 2, py - 16, 2, px, py - 14, 10);
+  skinGrad.addColorStop(0, '#f5d4b8');
+  skinGrad.addColorStop(1, '#d9b294');
+  ctx.fillStyle = skinGrad;
+  ctx.beginPath();
+  ctx.arc(px, py - 14, 9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(31, 41, 55, 0.3)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+
+  // Hair (modern style)
+  ctx.fillStyle = '#3a2c20';
+  ctx.beginPath();
+  ctx.arc(px, py - 16, 9, Math.PI * 0.95, Math.PI * 2.05);
+  ctx.closePath();
+  ctx.fill();
+  // Side fringe
+  ctx.beginPath();
+  ctx.moveTo(px - 7, py - 16);
+  ctx.quadraticCurveTo(px - 4, py - 10, px - 2, py - 11);
+  ctx.lineTo(px - 6, py - 12);
+  ctx.closePath();
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath();
+  ctx.arc(px - 3, py - 13, 0.9, 0, Math.PI * 2);
+  ctx.arc(px + 3, py - 13, 0.9, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Subtle blush
+  ctx.fillStyle = 'rgba(217, 106, 58, 0.2)';
+  ctx.beginPath();
+  ctx.arc(px - 5, py - 10, 1.5, 0, Math.PI * 2);
+  ctx.arc(px + 5, py - 10, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Smile
+  ctx.strokeStyle = '#1f2937';
+  ctx.lineWidth = 0.8;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.arc(px, py - 11, 2.2, 0.3, Math.PI - 0.3);
+  ctx.stroke();
+
+  // Stethoscope (modern, fuller)
+  ctx.strokeStyle = '#1f2937';
+  ctx.lineWidth = 1.8;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(px - 8, py - 4);
+  ctx.quadraticCurveTo(px - 5, py + 4, px, py + 8);
+  ctx.quadraticCurveTo(px + 5, py + 4, px + 8, py - 4);
+  ctx.stroke();
+  // Chest piece
+  ctx.fillStyle = '#e08877';
+  ctx.beginPath();
+  ctx.arc(px, py + 9, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath();
+  ctx.arc(px, py + 9, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ============== MINIGAME LAUNCHER ==============
+function openMinigame(station) {
+  dialogActive = true;
+  activeMinigame = station;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'minigame-overlay';
+  overlay.id = 'active-minigame';
+  document.body.appendChild(overlay);
+
+  const num = STATION_DATA.findIndex(s => s.id === station.id) + 1;
+  const typeLabels = {
+    sort_game: 'SORTING',
+    dialogue: 'DIALOGUE',
+    reveal: 'INVESTIGATION',
+    timed: 'TIMED CHOICE',
+    order: 'PROCEDURE'
+  };
+
+  overlay.innerHTML = `
+    <div class="minigame-panel">
+      <div class="minigame-header">
+        <div class="minigame-num">${num}</div>
+        <div class="minigame-info">
+          <div class="minigame-tag">STATION ${num} OF 5</div>
+          <div class="minigame-title">${station.name}</div>
+        </div>
+        <div class="minigame-type">${typeLabels[station.type]}</div>
+      </div>
+      <div id="minigame-body"></div>
+    </div>
+  `;
+
+  if (station.type === 'sort_game') renderSortGame();
+  else if (station.type === 'dialogue') renderDialogue();
+  else if (station.type === 'reveal') renderReveal();
+  else if (station.type === 'timed') renderTimedTheory();
+  else if (station.type === 'order') renderOrder();
+}
+
+function closeMinigame(awardXp, wasCorrect) {
+  if (activeMinigame) {
+    activeMinigame.completed = true;
+    completed++;
+    if (awardXp > 0) {
+      totalXp += awardXp;
+      showXpPop(awardXp, wasCorrect ? 'Great work!' : 'You made it through');
+    }
+    if (wasCorrect) correctCount++;
+  }
+  const overlay = document.getElementById('active-minigame');
+  if (overlay) overlay.remove();
+  dialogActive = false;
+  activeMinigame = null;
+  updateHUD();
+
+  if (completed >= 5) {
+    setTimeout(finishGame, 1500);
+  }
+}
+
+// ============== STATION 1: SORT GAME ==============
+const SORT_ITEMS = [
+  { text: 'A patient threatens to sue the hospital after a fall', correct: 'law' },
+  { text: 'You spend extra time comforting a frightened patient', correct: 'ethics' },
+  { text: 'A nurse fails to document medication administration', correct: 'both' },
+  { text: 'You choose not to gossip about a patient even when no rule applies', correct: 'ethics' },
+  { text: 'You must report a colleague who is impaired at work', correct: 'both' }
+];
+
+let sortState = { idx: 0, results: [] };
+
+function renderSortGame() {
+  sortState = { idx: 0, results: [] };
+  const body = document.getElementById('minigame-body');
+  body.innerHTML = `
+    <div class="minigame-prompt"><strong>Sort each scenario into the right bucket.</strong> Law is what you <em>must</em> do (enforceable). Ethics is what you <em>should</em> do (reasoned). Both means it lives in both spheres.</div>
+    <div class="sort-arena" id="sort-arena"></div>
+  `;
+  showSortItem();
+}
+
+function showSortItem() {
+  const arena = document.getElementById('sort-arena');
+  if (sortState.idx >= SORT_ITEMS.length) {
+    const correctCount = sortState.results.filter(r => r.correct).length;
+    const allCorrect = correctCount === SORT_ITEMS.length;
+    const xp = allCorrect ? 100 : 50 + (correctCount * 10);
+    arena.innerHTML = `
+      <div class="feedback ${allCorrect ? '' : 'error'}">
+        <span class="feedback-tag">${correctCount} of ${SORT_ITEMS.length} correct</span>
+        <div class="feedback-text">
+          <strong>Law sets the floor</strong> (what's enforceable). <strong>Ethics asks what you should do</strong>, often demanding more than law requires. Things land in "both" when they're enforceable AND ethically required.
+        </div>
+      </div>
+      <div class="minigame-actions">
+        <button class="btn" onclick="closeMinigame(${xp}, ${allCorrect})">Done — Collect ${xp} XP</button>
+      </div>
+    `;
+    return;
+  }
+
+  const item = SORT_ITEMS[sortState.idx];
+  arena.innerHTML = `
+    <div class="game-progress">
+      ${SORT_ITEMS.map((_, i) => {
+        if (i < sortState.idx) {
+          const r = sortState.results[i];
+          return `<div class="progress-dot done ${r.correct ? 'correct' : 'wrong'}"></div>`;
+        }
+        return `<div class="progress-dot"></div>`;
+      }).join('')}
+    </div>
+    <div class="incoming-card">
+      <div class="incoming-label">SCENARIO ${sortState.idx + 1} OF ${SORT_ITEMS.length}</div>
+      <div class="incoming-text">${item.text}</div>
+    </div>
+    <div class="sort-buckets">
+      <button class="bucket-btn law" onclick="answerSort('law')">
+        <div class="bucket-name">Law</div>
+        <div class="bucket-sub">Must do</div>
+      </button>
+      <button class="bucket-btn ethics" onclick="answerSort('ethics')">
+        <div class="bucket-name">Ethics</div>
+        <div class="bucket-sub">Should do</div>
+      </button>
+      <button class="bucket-btn both" onclick="answerSort('both')">
+        <div class="bucket-name">Both</div>
+        <div class="bucket-sub">Overlap</div>
+      </button>
+    </div>
+  `;
+}
+
+function answerSort(answer) {
+  const item = SORT_ITEMS[sortState.idx];
+  const correct = answer === item.correct;
+  sortState.results.push({ correct });
+
+  // Visual feedback briefly
+  document.querySelectorAll('.bucket-btn').forEach(btn => {
+    btn.disabled = true;
+    const cls = btn.classList[1];
+    if (cls === item.correct) btn.classList.add('correct');
+    else if (cls === answer && !correct) btn.classList.add('wrong');
+  });
+
+  setTimeout(() => {
+    sortState.idx++;
+    showSortItem();
+  }, 700);
+}
+
+// ============== STATION 2: DIALOGUE ==============
+function renderDialogue() {
+  const body = document.getElementById('minigame-body');
+  body.innerHTML = `
+    <div class="minigame-prompt">A patient is asking you a hard question. Choose your response carefully.</div>
+    <div class="dialogue-patient">
+      <div class="dialogue-patient-name">Mr Davies, 68</div>
+      <div class="dialogue-patient-context">Advanced lung cancer. The medical team has decided not to inform him of his terminal prognosis at the family's request.</div>
+      <div class="dialogue-patient-quote">"Be honest with me, am I dying?"</div>
+    </div>
+    <div class="dialogue-question">What's the most ethically defensible response?</div>
+    <div class="dialogue-options" id="dialogue-options"></div>
+  `;
+
+  const options = [
+    { text: "Tell him 'I think you need to discuss this with the doctor' and leave the room.", best: false,
+      why: "Deflection. You haven't lied, but you haven't honoured his question either. <strong>Acknowledging while ensuring follow up</strong> is more respectful." },
+    { text: "Acknowledge his question. Sit down. Say something like 'I can see you're asking a hard question. Tell me what you've noticed.' Then commit to arranging the doctor visit today.",
+      best: true,
+      why: "This is the ethically robust response. You've honoured <strong>autonomy</strong>, <strong>honesty</strong>, and <strong>scope of practice</strong>. You've given him space to be heard and ensured the right conversation happens." },
+    { text: "Reassure him: 'Don't worry, we're doing everything we can. Just focus on resting.'", best: false,
+      why: "A paternalistic lie of omission. It denies him information about his own life and breaches <strong>honesty</strong>. The family's request cannot override the patient's right to know." },
+    { text: "Tell him directly that yes, he is dying.", best: false,
+      why: "Honest but outside your scope. Prognosis delivery is a medical conversation. Support honesty by ensuring the doctor follows up, don't go alone." }
+  ];
+
+  const opts = document.getElementById('dialogue-options');
+  options.sort(() => Math.random() - 0.5);
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'dialogue-option';
+    btn.textContent = opt.text;
+    btn.onclick = () => answerDialogue(opt, options, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function answerDialogue(opt, all, btn) {
+  document.querySelectorAll('.dialogue-option').forEach(el => {
+    el.disabled = true;
+    if (el === btn) el.classList.add('chosen', opt.best ? 'best' : 'bad');
+    else el.classList.add('faded');
+  });
+  const xp = opt.best ? 100 : 40;
+  const body = document.getElementById('minigame-body');
+  const fb = document.createElement('div');
+  fb.className = 'feedback' + (opt.best ? '' : ' error');
+  fb.innerHTML = `
+    <span class="feedback-tag">${opt.best ? 'Best response' : 'Reconsider'}</span>
+    <div class="feedback-text">${opt.why}</div>
+  `;
+  body.appendChild(fb);
+
+  const actions = document.createElement('div');
+  actions.className = 'minigame-actions';
+  actions.innerHTML = `<button class="btn" onclick="closeMinigame(${xp}, ${opt.best})">Continue — Collect ${xp} XP</button>`;
+  body.appendChild(actions);
+}
+
+// ============== STATION 3: REVEAL DATA ==============
+const REVEAL_CHARTS = [
+  { icon: '🩺', q: "What's the diagnosis?", a: "Stage III breast cancer. Surgery scheduled tomorrow." },
+  { icon: '👨‍👩‍👧', q: "What's the family situation?", a: "Sole carer for two young children. No partner. No nearby relatives." },
+  { icon: '🗣️', q: "What does the patient want?", a: "She's terrified of surgery but is more terrified of dying. Wants the surgery but wants to be home with her kids tonight." },
+  { icon: '💰', q: "What are the resource considerations?", a: "Theatre is booked. Delay would push her to next week. Limited childcare options for her if she stays in." }
+];
+
+let revealState = { revealed: 0 };
+
+function renderReveal() {
+  revealState = { revealed: 0 };
+  const body = document.getElementById('minigame-body');
+  body.innerHTML = `
+    <div class="minigame-prompt">A patient needs an urgent ethical decision about her treatment. <strong>Before you can decide, you need the data.</strong> Tap each chart to reveal the facts. Good ethics needs good data.</div>
+    <div class="data-progress" id="data-progress">Charts revealed: 0 of ${REVEAL_CHARTS.length}</div>
+    <div class="chart-grid" id="chart-grid"></div>
+    <div id="reveal-conclusion"></div>
+  `;
+  const grid = document.getElementById('chart-grid');
+  REVEAL_CHARTS.forEach((chart, i) => {
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.dataset.idx = i;
+    card.innerHTML = `
+      <div class="chart-card-header">
+        <div class="chart-card-label">Chart ${i + 1}</div>
+        <div class="chart-card-icon">${chart.icon}</div>
+      </div>
+      <div class="chart-card-question">${chart.q}</div>
+      <div class="chart-card-hidden">▸ Tap to reveal</div>
+    `;
+    card.onclick = () => revealChart(card, chart, i);
+    grid.appendChild(card);
+  });
+}
+
+function revealChart(card, chart, i) {
+  if (card.classList.contains('revealed')) return;
+  card.classList.add('revealed');
+  card.querySelector('.chart-card-hidden').remove();
+  const ans = document.createElement('div');
+  ans.className = 'chart-card-answer';
+  ans.textContent = chart.a;
+  card.appendChild(ans);
+  revealState.revealed++;
+  document.getElementById('data-progress').textContent = `Charts revealed: ${revealState.revealed} of ${REVEAL_CHARTS.length}`;
+
+  if (revealState.revealed === REVEAL_CHARTS.length) {
+    const conc = document.getElementById('reveal-conclusion');
+    conc.innerHTML = `
+      <div class="feedback">
+        <span class="feedback-tag">All Data Gathered</span>
+        <div class="feedback-text">
+          Now you have the full picture. <strong>Notice how each fact changes the ethical calculation.</strong> Without the family info, you might miss her childcare concerns. Without the resource info, you might not see the time pressure. <em>"Good ethics must be grounded in good data"</em> means ethical reasoning starts with knowing what you're actually dealing with.
+        </div>
+      </div>
+      <div class="minigame-actions">
+        <button class="btn" onclick="closeMinigame(100, true)">Continue — Collect 100 XP</button>
+      </div>
+    `;
+  }
+}
+
+// ============== STATION 4: TIMED THEORY ==============
+const THEORY_STATEMENTS = [
+  { text: 'Some actions are right or wrong in themselves', correct: 'deon' },
+  { text: 'The greatest good for the greatest number', correct: 'tele' },
+  { text: 'Lying is wrong even to save a life', correct: 'deon' },
+  { text: 'Judges actions by their consequences', correct: 'tele' },
+  { text: 'Kant\'s categorical imperative belongs here', correct: 'deon' },
+  { text: 'Utilitarianism is its main form', correct: 'tele' }
+];
+
+let timedState = { idx: 0, results: [], timer: null, timeLeft: 0 };
+
+function renderTimedTheory() {
+  timedState = { idx: 0, results: [], timer: null, timeLeft: 0 };
+  const body = document.getElementById('minigame-body');
+  body.innerHTML = `
+    <div class="minigame-prompt"><strong>Quick thinking!</strong> Each statement appears for 6 seconds. Tap <strong>Deontology</strong> (duty based) or <strong>Teleology</strong> (outcome based) before time runs out. You get partial XP just for participating.</div>
+    <div id="timed-content"></div>
+  `;
+  showTimedStatement();
+}
+
+function showTimedStatement() {
+  const content = document.getElementById('timed-content');
+  if (timedState.idx >= THEORY_STATEMENTS.length) {
+    const correctCount = timedState.results.filter(r => r.correct).length;
+    const xp = 40 + (correctCount * 10);
+    content.innerHTML = `
+      <div class="feedback ${correctCount >= 4 ? '' : 'error'}">
+        <span class="feedback-tag">${correctCount} of ${THEORY_STATEMENTS.length} correct</span>
+        <div class="feedback-text">
+          <strong>Deontology</strong> (from Greek "deon", duty) says some acts are intrinsically right or wrong, regardless of consequences. <strong>Teleology</strong> (from "telos", end) judges actions by their outcomes. Most clinical thinking blends both, but knowing which lens you're using helps you reason clearly.
+        </div>
+      </div>
+      <div class="minigame-actions">
+        <button class="btn" onclick="closeMinigame(${xp}, ${correctCount >= 4})">Done — Collect ${xp} XP</button>
+      </div>
+    `;
+    return;
+  }
+
+  const stmt = THEORY_STATEMENTS[timedState.idx];
+  timedState.timeLeft = 6;
+  content.innerHTML = `
+    <div class="timed-counter">STATEMENT ${timedState.idx + 1} OF ${THEORY_STATEMENTS.length}</div>
+    <div class="theory-timer-wrap"><div class="theory-timer-fill" id="theory-timer-fill" style="width: 100%;"></div></div>
+    <div class="theory-statement">${stmt.text}</div>
+    <div class="theory-choice-row">
+      <button class="theory-choice-btn deon" onclick="answerTimed('deon')">
+        <div class="theory-choice-name">Deontology</div>
+        <div class="theory-choice-sub">Duty based</div>
+      </button>
+      <button class="theory-choice-btn tele" onclick="answerTimed('tele')">
+        <div class="theory-choice-name">Teleology</div>
+        <div class="theory-choice-sub">Outcome based</div>
+      </button>
+    </div>
+  `;
+
+  // Start timer
+  const fill = document.getElementById('theory-timer-fill');
+  if (timedState.timer) clearInterval(timedState.timer);
+  const start = performance.now();
+  timedState.timer = setInterval(() => {
+    const elapsed = (performance.now() - start) / 1000;
+    timedState.timeLeft = Math.max(0, 6 - elapsed);
+    fill.style.width = (timedState.timeLeft / 6 * 100) + '%';
+    if (timedState.timeLeft <= 0) {
+      clearInterval(timedState.timer);
+      answerTimed(null);
+    }
+  }, 50);
+}
+
+function answerTimed(answer) {
+  if (timedState.timer) clearInterval(timedState.timer);
+  const stmt = THEORY_STATEMENTS[timedState.idx];
+  const correct = answer === stmt.correct;
+  timedState.results.push({ correct, answered: answer !== null });
+
+  document.querySelectorAll('.theory-choice-btn').forEach(btn => {
+    btn.disabled = true;
+    if (btn.classList.contains(stmt.correct)) btn.classList.add('correct');
+    else if (answer && btn.classList.contains(answer)) btn.classList.add('wrong');
+  });
+
+  setTimeout(() => {
+    timedState.idx++;
+    showTimedStatement();
+  }, 800);
+}
+
+// ============== STATION 5: ORDER STEPS ==============
+const KERRIDGE_STEPS = [
+  { id: 's1', text: 'Clearly state the problem or dilemma', correctPos: 0 },
+  { id: 's2', text: 'Get the facts (clinical, social, legal, contextual)', correctPos: 1 },
+  { id: 's3', text: 'Consider the ethical principles involved', correctPos: 2 },
+  { id: 's4', text: 'Consider how the problem looks from other perspectives', correctPos: 3 },
+  { id: 's5', text: 'Identify the available options and weigh them', correctPos: 4 },
+  { id: 's6', text: 'Choose an option, act, and evaluate the outcome', correctPos: 5 }
+];
+
+let orderState = [];
+
+function renderOrder() {
+  orderState = [...KERRIDGE_STEPS].sort(() => Math.random() - 0.5);
+  const body = document.getElementById('minigame-body');
+  body.innerHTML = `
+    <div class="minigame-prompt">A complex ethical situation is unfolding. Put the <strong>Kerridge, Lowe and McPhee decision making model</strong> in the correct order to handle it.</div>
+    <div class="scenario-context">
+      <strong>The situation:</strong> A teenage patient is refusing treatment her parents have consented to. Tensions are rising. You need a process, fast.
+    </div>
+    <div class="order-list" id="order-list"></div>
+    <div class="minigame-actions">
+      <button class="btn" onclick="checkOrder()">Lock in My Order</button>
+    </div>
+  `;
+  renderOrderList();
+}
+
+function renderOrderList() {
+  const list = document.getElementById('order-list');
+  list.innerHTML = '';
+  orderState.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'order-item';
+    el.innerHTML = `
+      <div class="order-item-num">${i + 1}</div>
+      <div class="order-item-text">${item.text}</div>
+      <div class="order-controls">
+        <div class="order-btn" onclick="moveOrder(${i}, -1)">↑</div>
+        <div class="order-btn" onclick="moveOrder(${i}, 1)">↓</div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function moveOrder(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= orderState.length) return;
+  [orderState[idx], orderState[newIdx]] = [orderState[newIdx], orderState[idx]];
+  renderOrderList();
+}
+
+function checkOrder() {
+  const correct = orderState.every((item, i) => item.correctPos === i);
+  const body = document.getElementById('minigame-body');
+  const correctOrder = [...KERRIDGE_STEPS].sort((a, b) => a.correctPos - b.correctPos);
+
+  let fbHtml;
+  if (correct) {
+    fbHtml = `
+      <div class="feedback">
+        <span class="feedback-tag">Correct order</span>
+        <div class="feedback-text">The <strong>Kerridge model</strong> gives you a scaffold for ethical reasoning under pressure. <em>State the problem → get facts → consider principles → view perspectives → weigh options → act and evaluate</em>. Internalise this and you'll never panic in a tough situation.</div>
+      </div>
+      <div class="minigame-actions">
+        <button class="btn" onclick="closeMinigame(100, true)">Continue — Collect 100 XP</button>
+      </div>
+    `;
+  } else {
+    const orderList = correctOrder.map((s, i) => `<strong>${i + 1}.</strong> ${s.text}`).join('<br>');
+    fbHtml = `
+      <div class="feedback error">
+        <span class="feedback-tag">Not quite</span>
+        <div class="feedback-text">The Kerridge model goes in this order:<br><br>${orderList}<br><br>Think of it as a workflow that takes you from "what's the problem?" to "did it work?"</div>
+      </div>
+      <div class="minigame-actions">
+        <button class="btn" onclick="closeMinigame(50, false)">Continue — Collect 50 XP</button>
+      </div>
+    `;
+  }
+
+  // Replace the existing content
+  body.innerHTML = `<div class="minigame-prompt">A complex ethical situation is unfolding. Put the <strong>Kerridge, Lowe and McPhee decision making model</strong> in the correct order to handle it.</div>` + body.querySelector('.scenario-context').outerHTML + body.querySelector('.order-list').outerHTML + fbHtml;
+}
+
+// ============== FINISH ==============
+function finishGame() {
+  gameState = 'finished';
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('finish-screen').classList.remove('hidden');
+
+  document.getElementById('final-xp').textContent = totalXp;
+  document.getElementById('final-correct').textContent = correctCount;
+  document.getElementById('final-stations').textContent = completed;
+
+  // Archetype based on score
+  let archTitle, archDesc;
+  if (totalXp >= 450) {
+    archTitle = 'THE PRINCIPLED PRACTITIONER';
+    archDesc = 'You moved through the ward with confidence and care. Your ethical reasoning is already strong. Carry this into Module 2.';
+  } else if (totalXp >= 300) {
+    archTitle = 'THE THOUGHTFUL LEARNER';
+    archDesc = 'You\'re building solid ethical foundations. A few stations stretched you, which is exactly what learning looks like. Review the toolkit summary.';
+  } else {
+    archTitle = 'THE EMERGING NURSE';
+    archDesc = 'You\'re finding your way through ethical reasoning. That\'s normal at this stage. Revisit the content, replay any stations that surprised you.';
+  }
+  document.getElementById('archetype-title').textContent = archTitle;
+  document.getElementById('archetype-desc').textContent = archDesc;
+  document.getElementById('finish-title').textContent = correctCount >= 4 ? 'Excellent Shift' : 'Shift Complete';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  document.getElementById('finish-screen').classList.add('hidden');
+  document.getElementById('intro-screen').classList.remove('hidden');
+  gameState = 'intro';
+  player = { x: 400, y: 380, targetX: 400, targetY: 380, facing: 1 };
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
